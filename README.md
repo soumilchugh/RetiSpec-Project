@@ -62,7 +62,7 @@ Trained the network for 20 epochs only. Could have trained the network longer si
 * Performance Evaluation
   *  Since dataset is balanced, accuracy can be used as a criteria for evaluation
   *  For a more detailed analysis, confusion matrix is computed
-  *  From the confusion matrix below, one can see that there is only 1 image where misclassification is reported. 
+  *  From the confusion matrix below, one can see that there is only 1 image where misclassification is reported with precision and recall for each of the classes being close to 1. 
 
 ![Alt text](confusion_matrix.png?raw=true "Confusion Matrix")
 
