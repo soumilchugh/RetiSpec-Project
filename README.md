@@ -28,7 +28,7 @@ This project contains code to train and test a CNN based neural network for bina
     * This folder consists of tensorboard file that can be loaded to view the train/val behavior
 
 * Network Architecture
-  * Input to the network is RGB and IR image. Output is probability of whether the RGB and IR images belong to Class Forest or River. 
+  * Input to the network is RGB and IR image. Output is probability of whether the RGB and IR images belong to Class Forest (0) or River (1). 
   * The network defined in network.py consists of three main modules: two feature extractors and one projection module. 
   * The projection module is followed by an output layer. 
   * Feature Extractor
