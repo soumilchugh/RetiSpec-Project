@@ -1,0 +1,7 @@
+hyperparameters:
+  epochs: 21
+  batch_size: 32
+  shuffle: True
+  num_workers: 0
+  pin_memory: False
+  drop_last: True
