@@ -26,6 +26,8 @@ This project contains code to train and test a CNN based neural network for bina
     * This folder consists of the models that are saved during training and the final trained model
   * logs:
     * This folder consists of tensorboard file that can be loaded to view the train/val behavior
+    * tensorboard --logdir=logs/ --host localhost --port 8088
+    * http://localhost:8088
 
 * Network Architecture
   * Input to the network is RGB and IR image. Output is probability of whether the RGB and IR images belong to Class Forest (0) or River (1). 
