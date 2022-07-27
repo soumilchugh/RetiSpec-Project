@@ -5,7 +5,6 @@ config.mode = 'Classification'
 
 config.model = ConfigNode()
 config.model.model_test_dir = 'models/final.pth'
-config.model.use_tensorboard = False
 config.model.num_classes = 2
 config.model.class_names = ['Forest', 'River']
 config.model.image_size = 64
@@ -13,8 +12,8 @@ config.model.device =  "cpu"
 config.model.save_model_dir = "models/"
 
 config.dataset = ConfigNode()
-config.dataset.train_dataset_path = 'C:\\Users\\s84171040\\Documents\\RetiSpec\\RGBIRDataset\\train\\'
-config.dataset.test_dataset_path = 'C:\\Users\\s84171040\\Documents\\RetiSpec\\RGBIRDataset\\val\\'
+config.dataset.train_dataset_path = 'RGBIRDataset\\train\\'
+config.dataset.test_dataset_path = 'RGBIRDataset\\val\\'
 config.dataset.val_ratio = 0.2
 
 config.hyperparameters = ConfigNode()
