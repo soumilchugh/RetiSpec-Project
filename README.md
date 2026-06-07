@@ -1,70 +1,106 @@
-# RetiSpec-Project
+# RetiSpec Project
 
-** About the Project ****
+This repository contains code for training and evaluating a CNN-based binary classifier using paired RGB and near-infrared image inputs.
 
-This project contains code to train and test a CNN based neural network for binary classification. 
+The project uses a configurable training and testing pipeline with YACS configuration files, TensorBoard logging, and confusion-matrix based evaluation.
 
-* Code Structure
-*   The following describes the folder structure and associated files
+## Project Overview
 
-* config: 
-  *  This project uses YACS configuration. Yacs allows keeping tracking of changes in hyperparameters making it easier for experimentation.
-  *  A default configuration can be found in config/defaults.py file. Any changes with respect to the default file can be mentioned in the .yaml files.
-  *  In this project, train.yaml contains parameters that are specific to only training and test.yaml contains parameters specific for testing. 
-  *  The parameters defined in the .yaml files overwrite the default parameters (defined in defaults.py file) in the train.py and test.py script. 
+The model predicts whether paired RGB and NIR images belong to one of two classes:
 
-* model_training:
-  * This folder consists of all the training related scripts including network architecture and the dataloader. 
-  * dataset_loader.py, dataset_creater.py, one_class_dataset.py and transforms.py are scripts associated with the data loading 
-  * network.py contains the code for the CNN
+- **Forest**: class 0
+- **River**: class 1
 
-* train.py: Responsible for training the CNN network
-* test.py: Responsible for testing the CNN network by loading the trained model
+The network uses two image feature extractors, one for RGB images and one for NIR images, then fuses the learned representations before classification.
 
-* Additional Folders
-  * models:
-    * This folder consists of the models that are saved during training and the final trained model
-  * logs:
-    * This folder consists of tensorboard file that can be loaded to view the train/val behavior
-    * tensorboard --logdir=logs/ --host localhost --port 8088
-    * http://localhost:8088
+## Repository Structure
 
-* Network Architecture
-  * Input to the network is RGB and IR image. Output is probability of whether the RGB and IR images belong to Class Forest (0) or River (1). 
-  * The network defined in network.py consists of three main modules: two feature extractors and one projection module. 
-  * The projection module is followed by an output layer. 
-  * Feature Extractor
-    * The input to each of the two feature extractors is an image of shape 64x64xC and output is a feature map with dimensions 8*8*32
-    * Value of C depends on the input type.
-    * For RGB image, C is 3 while for NIR image, C is 1.
-    * Each of the Feature extractor consists of 3 CNN layers (in total 6 CNN layers in the network). 
-    * CNN layer is followed by BatchNorm layer, Relu Activation function and MaxPooling Layer. 
-    * The number of channels increases with each of the CNN layers.
-  * The output of the two feature extractors which are 2D feature maps are flattened resulting in a 1d vector each of size 512
-  * The two 1d vectors of size 512 are fused together by elementwise multiplication. This ensures that the network only uses the important features from the two input images for learning to differentiate between the two classes.
-    
-  * Projection Module consists of 2 FC layers.
-    * Input to the projection module is a 1D vector of size 512 and output is a 1D vector of size 32. 
-    * Each of the FC layers consists a linear layer followed by Batchnorma and Relu Activation function. 
-  
-* Data Augmentation During Training using albumentations library:
-  * Avoided the use of color based augmentations since not sure the effect on the RGB and IR image
-  * Applied Blurring, Distortion and Spatial Transform which include scaling.shifting and rotation. 
+```text
+config/
+  defaults.py        Default YACS configuration
+  train.yaml         Training-specific overrides
+  test.yaml          Testing-specific overrides
 
-* Dataset Splitting
-  * Dataset provided consists of train and val folders. Each of the two folders consists of equal number of images for each of the two classes
-  * Since no test dataset is provided, the val images were used for testing only
-  * The train images were split into train and validation with the ratio of split being 80:20
+model_training/
+  dataset_loader.py  Data loading utilities
+  dataset_creater.py Dataset creation utilities
+  one_class_dataset.py
+  transforms.py      Data transforms and augmentation
+  network.py         CNN architecture
 
-To look at the train/val accuracy and loss curves, please use tensorboard. You will find the tensorboard file in the logs folder
-Trained the network for 20 epochs only. Could have trained the network longer since validation loss is still reducing. Usually validation loss is used as the criteria for stopping the training process
+train.py             Training entry point
+test.py              Testing entry point
+models/              Saved training checkpoints and final model
+logs/                TensorBoard logs
+```
 
-* Performance Evaluation
-  *  Since dataset is balanced, accuracy can be used as a criteria for evaluation
-  *  For a more detailed analysis, confusion matrix is computed
-  *  From the confusion matrix below, one can see that there is only 1 image where misclassification is reported with precision and recall for each of the classes being close to 1. 
+## Configuration
 
-![Alt text](confusion_matrix.png?raw=true "Confusion Matrix")
+The project uses [YACS](https://github.com/rbgirshick/yacs) for experiment configuration.
 
+- Default parameters live in `config/defaults.py`.
+- Training-specific parameters live in `config/train.yaml`.
+- Testing-specific parameters live in `config/test.yaml`.
+- YAML values override defaults inside `train.py` and `test.py`.
 
+## Network Architecture
 
+The model has three main components:
+
+1. RGB feature extractor
+2. NIR feature extractor
+3. Projection and classification head
+
+Each feature extractor receives an image with shape `64 x 64 x C` and outputs an `8 x 8 x 32` feature map.
+
+- RGB input channels: `C = 3`
+- NIR input channels: `C = 1`
+
+Each extractor includes three CNN blocks with convolution, batch normalization, ReLU activation, and max pooling. The extracted feature maps are flattened into 512-dimensional vectors and fused using elementwise multiplication.
+
+The projection module contains two fully connected layers and maps the fused 512-dimensional representation to a 32-dimensional vector before classification.
+
+## Data Augmentation
+
+Training uses the `albumentations` library. Color-based augmentations were avoided because the model uses both RGB and NIR inputs. Augmentations focus on:
+
+- Blur
+- Distortion
+- Scaling
+- Shifting
+- Rotation
+
+## Dataset Split
+
+The provided dataset contains `train` and `val` folders with balanced class counts.
+
+Because no separate test dataset was provided:
+
+- The validation images were used for testing.
+- The training images were split into training and validation sets using an 80:20 ratio.
+
+## TensorBoard
+
+Training and validation curves can be viewed with TensorBoard:
+
+```bash
+tensorboard --logdir=logs/ --host localhost --port 8088
+```
+
+Then open:
+
+```text
+http://localhost:8088
+```
+
+## Evaluation
+
+The network was trained for 20 epochs. Since the validation loss was still decreasing, longer training may improve performance.
+
+The dataset is balanced, so accuracy is a reasonable evaluation metric. A confusion matrix is also computed for a more detailed view of class-level performance.
+
+![Confusion Matrix](confusion_matrix.png?raw=true "Confusion Matrix")
+
+## Portfolio Context
+
+This project is part of Soumil Chugh's applied machine-learning and computer-vision portfolio, with emphasis on multimodal image inputs, CNN architecture design, and model evaluation.
