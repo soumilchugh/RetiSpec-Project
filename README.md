@@ -100,7 +100,3 @@ The network was trained for 20 epochs. Since the validation loss was still decre
 The dataset is balanced, so accuracy is a reasonable evaluation metric. A confusion matrix is also computed for a more detailed view of class-level performance.
 
 ![Confusion Matrix](confusion_matrix.png?raw=true "Confusion Matrix")
-
-## Portfolio Context
-
-This project is part of Soumil Chugh's applied machine-learning and computer-vision portfolio, with emphasis on multimodal image inputs, CNN architecture design, and model evaluation.
